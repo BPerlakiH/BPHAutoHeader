@@ -1,0 +1,10 @@
+---
+_common:
+  _js: jquery.min, bootstrap.min, respond.min, html5shiv 
+  _css: bootstrap.min, bootstrap-theme.min
+Article:
+  _js: home
+  _css: home
+About/Us:
+  _js: about_new
+  _css: about_new
