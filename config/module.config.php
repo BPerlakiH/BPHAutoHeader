@@ -17,7 +17,10 @@ return array(
             $config = $sm->get('Config');
             $pConfig = $config['bph'];
             $autoHeader = new \BPHAutoHeader\AutoHeader($pConfig['headerFile'], $pConfig['public_dir']);
-            $autoHeader->setLogger($sm->get('Zend\Log'));
+            $env = getenv('APP_ENV') ?: 'production';
+            if($env == "development") {
+              $autoHeader->setLogger($sm->get('Zend\Log'));
+            }
             $autoHeader->cssDir = $pConfig['css_dir'];
             $autoHeader->jsDir = $pConfig['js_dir'];
             return $autoHeader;

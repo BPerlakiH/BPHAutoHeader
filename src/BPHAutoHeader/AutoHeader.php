@@ -54,13 +54,19 @@ class AutoHeader {
   
   public function setHeaders(MvcEvent $e) {
     if(!$this->_isValidHeaderFile()) {
-      $this->logger->log(Logger::ERR, sprintf("missing header file: %s", $this->headerFilePath));
+      $this->_log(Logger::ERR, sprintf("missing header file: %s", $this->headerFilePath));
       return;
     }
     $this->_event = $e;
     $this->_setACKeys();
     $this->_loadHeaders();
     $this->_setHeaders();
+  }
+  
+  private function _log($priority, $message) {
+    if($this->logger) {
+      $this->logger->log($priority, $message);
+    }
   }
   
   private function _isValidHeaderFile() {
@@ -73,7 +79,7 @@ class AutoHeader {
   private function _setACKeys() {
     $route = $this->_event->getRouteMatch();
     if(!$route) {
-      $this->logger->log(Logger::ERR, "no route match found");
+      $this->_log(Logger::ERR, "no route match found");
       return;
     }
     $controller = $route->getParam('controller', 'index');
@@ -82,11 +88,12 @@ class AutoHeader {
       $controller = substr($controller, strlen($this->_appRoute));
     }
     $this->_ackey = ($action == "index") ? $controller : ($controller . "/" . $action);
+    $this->_ackey = strtolower($this->_ackey);
   }
   
   private function _loadHeaders() {
     if(!$this->headerFilePath) {
-      $this->logger->log(Logger::ERR, "no header config file was set");
+      $this->_log(Logger::ERR, "no header config file was set");
       return;
     }
     $this->_headYaml = spyc_load_file($this->headerFilePath);
@@ -105,10 +112,21 @@ class AutoHeader {
     $jsUris = array_merge($commonJSUris, $acJsUris);
     $cssUris = array_merge($commonCssUris, $acCssUris);
     
+    $acCSS = $this->_getACFile(".css");
+    if($acCSS) {
+      $cssUris[] = $acCSS;
+    }
+    
+    $acJS = $this->_getACFile(".js");
+    if($acJS) {
+      $jsUris[] = $acJS;
+    }
+    
     $this->_logMissingFiles();
     
     $renderer = $this->_event->getApplication()->getServiceManager()->get('Zend\View\Renderer\PhpRenderer');
     $headLink = $renderer->headLink();
+    
     foreach($cssUris as $cssUri) {
       $headLink->appendStylesheet($cssUri);
     }
@@ -120,29 +138,43 @@ class AutoHeader {
   
   private function _getHeadFilesForKey($acKey, $key) {
     $uris = array();
-    $subDir = ($key === "_css") ? $this->cssDir : $this->jsDir;
     if(isset($this->_headYaml[$acKey][$key])) {
       $values = $this->_headYaml[$acKey][$key];
       $extension = preg_replace('/_/', ".", $key);
       $fileNames = preg_split('/\,/', $values);
       foreach ($fileNames as $fileName) {
-        $fileRelPath = "/" .  $subDir . "/". trim($fileName) . $extension;
-        $filePath = getcwd() . $this->publicDir . $fileRelPath;
-        if(file_exists($filePath)) {
-          $uris[] = $fileRelPath;
-        } else {
-          $this->_missingUris[] = $filePath;
+        $uri = $this->_getURI($fileName, $extension);
+        if($uri) {
+          $uris[] = $uri;
         }
       }
+    } else {
+      $this->_missingUris[] = sprintf("not set %s", $acKey . ": " . $key);
     }
     return $uris;
   }
   
+  private function _getURI($fileName, $extension) {
+    $subDir = ($extension == ".css") ? $this->cssDir : $this->jsDir;
+    $fileRelPath = "/" .  $subDir . "/". strtolower(trim($fileName)) . $extension;
+    $filePath = getcwd() . $this->publicDir . $fileRelPath;
+    if (file_exists($filePath)) {
+      return $fileRelPath;
+    } 
+    $this->_missingUris[] = $filePath;
+    return false;
+  }
+  
+  private function _getACFile($extension) {
+    $fileName = preg_replace('/\//', '_', $this->_ackey);
+    return $this->_getURI($fileName, $extension);
+  }
+  
   private function _logMissingFiles() {
     if (0 < count($this->_missingUris)) {
-      $this->logger->log(Logger::NOTICE, sprintf('missing files for: %s', $this->_ackey));
+      $this->_log(Logger::NOTICE, sprintf('missing files for: %s', $this->_ackey));
       foreach ($this->_missingUris as $mURI) {
-        $this->logger->log(Logger::NOTICE, sprintf("\t%s",$mURI));
+        $this->_log(Logger::NOTICE, sprintf("\t%s",$mURI));
       }
     }
   }
