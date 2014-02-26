@@ -31,12 +31,17 @@ ZF2 Auto Header Module: DRY management of javascript and css head references in 
 	```
 
 ###When to use this module?
-The aim of this module is to reduce the tedious work of managing your js and css files via the standard zend solution, which imho is not centralised enough, and for most front end developers confusing. Some developers are including the common js and css files in their layout file, while including the action specific ones in their phtml files or in their controllers. As of my observation there is no regulation on this where to include them.
+- If you have lots of css or js files to include and you want to control them on a request/route level.
+- If you want to refactor css/js files
+- If you are having trouble figuring out where certain css or js files were included and why
+
+This module reduces the tedious work of managing your js and css files via the standard zend solution.
 
 By using this module **you can edit**, **and** most importantly **see all your js and css files in one place**. **Change their order and refactor them easily.**
 
 ###When not to use it?
-If you have just 1 or 2 css and js files, and you are happy with the zend way of adding them to your header (e.g. adding it to your layout file), this module is not for you.
+- if you have just 1 or 2 css / js files
+- if you are happy with the zend way of managing them in your header
 
 ###How does it work?
 #####At which point it will alter the header?
