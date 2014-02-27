@@ -30,7 +30,6 @@ class AutoHeader {
    */
   protected $logger;
   
-  protected $_appRoute = "Application\\Controller\\";
   protected $_ackey = "";
   
   /**
@@ -84,9 +83,6 @@ class AutoHeader {
     }
     $controller = $route->getParam('controller', 'index');
     $action = $route->getParam('action', 'index');
-    if(substr($controller, 0, strlen($this->_appRoute)) === $this->_appRoute) {
-      $controller = substr($controller, strlen($this->_appRoute));
-    }
     $this->_ackey = ($action == "index") ? $controller : ($controller . "/" . $action);
     $this->_ackey = strtolower($this->_ackey);
   }
