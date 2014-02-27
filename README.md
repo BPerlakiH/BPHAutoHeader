@@ -91,7 +91,7 @@ All the settings for this module can be found at the top of the `[app-root]/modu
 Obviously you can override these settings from your own config files.
 You can change the default folder settings, the header yaml file name and location, and the log file as well.
 
-###Future development
+###Todos:
 I will add a cache mechanism to the production mode, so it won't parse the yaml file for each request, which will hopefully improve the module's performance. At the moment I treat this module as more of a convenient tool, which aims to reduce coding time.
 
 
