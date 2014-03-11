@@ -39,33 +39,31 @@ This module reduces the tedious work of managing your js and css files via the s
 
 By using this module **you can edit**, **and** most importantly **see all your js and css files in one place**. **Change their order and refactor them easily.**
 
-###When not to use it?
-- if you have just 1 or 2 css / js files
-- if you are happy with the zend way of managing them in your header
-
 ###How does it work?
 #####At which point it will alter the header?
 This module is listening to the `RENDER` zend mvc event, and injects the found reference files to the view header at that point.
 
 #####Include common files
-It loads the header yaml file, which contains a `_common` part, these css and js files will be included in all views, just as if you would include them in the layout.
-#####Include files by route
+It loads the header yaml file, which contains a `_common` part, these css and js files will be included in all views first, just as if you would include them at the top of the layout.
+#####Include files by route names
 You can also control the references by routes. For example, if you have a route: `Album\Edit` you can add these new lines in the yaml file:
 
 	album\edit:
 		_css: editor
-		_js: jquery.min, rapidEdit
+		_js: jquery.min, rapidEdit, http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min
 
 **Notes:** 
 
 - **route names** should be **in lowercase**.
-The above will include:
+The above will include the following files for the route `Album\Edit`:
 	- /css/editor.css
 	- /js/jquery.min.js
 	- /js/rapidEdit.js
+	- http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js
 
-- As you can see you don't have to add the extensions
-- You can comma (,) separate files to include more than one file
+- As you can see you shouldn't have to add extensions
+- You can use external requests (http), not just local files
+- You can comma (,) separate files to include more than one file, they will be included in this order
 - The **module checks if the file actually exists, it won't include missing files**.
 - You can include both css and js files, or only one of them.
 
@@ -74,9 +72,11 @@ The above will include:
 If you want to create custom css or js files for a specific route, they will be automatically included for you without editing the yaml file.
 Assuming you have these custom routes: `Album\Index`, `Album\Edit`
 
-- for `Album\Index`: `album.css`, and `album.js` will be automatically included, if found. Note you should omit the index part in this case as that is default.
+- for `Album\Index`: `album.css`, and `album.js` will be automatically included, if found. Note you should omit the index part in this case as this is the default.
 - for `Album\Edit`: `album_edit.css` and `album_edit.js` will be automatically included, if found.
 
+#####Why YAML, and how to use it?
+[YAML (see on wiki)](http://en.wikipedia.org/wiki/YAML) is a human-readable data serialization format. In fact it is very easy to read for humans and most IDEs will support it out of the box.
 
 ###Debug:
 In order to debug missing references turn your environment to development, e.g.: by adding this line to your `[app-root]/public/.htaccess` file:
@@ -91,8 +91,16 @@ All the settings for this module can be found at the top of the `[app-root]/modu
 Obviously you can override these settings from your own config files.
 You can change the default folder settings, the header yaml file name and location, and the log file as well.
 
+###Reduce your http requests:
+Performance experts will tell you that too many http requests will slow down your website. In order to reduce the amount of javascript and css files, you can use an external tool to compile+compress+combine your files (such as coffeescript and sass).
+
+You can use this tool in development mode to link to your non-compressed and not combined assets, to make your debugging easy, while link to the compressed assets in your production environment.
+
+You can override the settings, either the folder names or the complete header yaml file name, so you can have one for development and one for production.
+
 ###Todos:
-I will add a cache mechanism to the production mode, so it won't parse the yaml file for each request, which will hopefully improve the module's performance. At the moment I treat this module as more of a convenient tool, which aims to reduce coding time.
+
+- **caching**: add a cache mechanism to the production mode, so it won't parse the yaml file for each request, which should improve the module's performance. At the moment I treat this module as more of a convenient tool, which aims to reduce coding time.
 
 
 

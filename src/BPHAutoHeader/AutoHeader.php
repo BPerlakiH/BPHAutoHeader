@@ -151,6 +151,9 @@ class AutoHeader {
   }
   
   private function _getURI($fileName, $extension) {
+    if(strpos($fileName, "http") === 1) {
+     return trim($fileName . $extension);
+    }
     $subDir = ($extension == ".css") ? $this->cssDir : $this->jsDir;
     $fileRelPath = "/" .  $subDir . "/". strtolower(trim($fileName)) . $extension;
     $filePath = getcwd() . $this->publicDir . $fileRelPath;
