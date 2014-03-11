@@ -1,4 +1,9 @@
 <?php
+/**
+ * Copyright (c) 2014, Balazs Perlaki-Horvath.
+ * All rights reserved.
+ */
+
 return array(
     
     'bph' => array(

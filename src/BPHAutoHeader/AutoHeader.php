@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @author Balazs Perlaki Horvath <ba.perlaki at gmail.com>
+ * Copyright (c) 2014, Balazs Perlaki-Horvath.
+ * All rights reserved.
  */
 namespace BPHAutoHeader;
 use Zend\Mvc\MvcEvent;

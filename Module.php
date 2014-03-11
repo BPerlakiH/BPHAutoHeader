@@ -4,6 +4,10 @@ namespace BPHAutoHeader;
 
 use Zend\Mvc\MvcEvent;
 
+/**
+ * Copyright (c) 2014, Balazs Perlaki-Horvath.
+ * All rights reserved.
+ */
 class Module {
   
 	public function onBootstrap(MvcEvent $e) {
