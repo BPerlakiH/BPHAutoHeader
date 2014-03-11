@@ -61,7 +61,7 @@ The above will include the following files for the route `Album\Edit`:
 	- /js/rapidEdit.js
 	- http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js
 
-- As you can see you shouldn't have to add extensions
+- As you can see extensions are not needed in the yaml file
 - You can use external requests (http), not just local files
 - You can comma (,) separate files to include more than one file, they will be included in this order
 - The **module checks if the file actually exists, it won't include missing files**.
