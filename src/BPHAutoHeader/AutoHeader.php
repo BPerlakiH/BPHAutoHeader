@@ -94,8 +94,6 @@ class AutoHeader {
       return;
     }
     $this->_headYaml = spyc_load_file($this->headerFilePath);
-    $this->cssDir = isset($this->_headYaml['_cssDir']) ? $this->_headYaml['_cssDir'] : 'css';
-    $this->jsDir = isset($this->_headYaml['_jsDir']) ? $this->_headYaml['_jsDir'] : 'js';
   }
   
   private function _setHeaders() {
@@ -152,10 +150,15 @@ class AutoHeader {
   }
   
   private function _getURI($fileName, $extension) {
-    if(strpos($fileName, "http") === 1) {
+    $fileName = trim($fileName);
+    if(strpos($fileName, "http") === 0) {
      return trim($fileName . $extension);
     }
     $subDir = ($extension == ".css") ? $this->cssDir : $this->jsDir;
+    $fileName = strtolower(preg_replace('/\\\/', '_', $fileName));
+    if(strpos($fileName, "application_controller_") === 0) {
+      $fileName = substr($fileName, strlen("application_controller_"));
+    }
     $fileRelPath = "/" .  $subDir . "/". strtolower(trim($fileName)) . $extension;
     $filePath = getcwd() . $this->publicDir . $fileRelPath;
     if (file_exists($filePath)) {
